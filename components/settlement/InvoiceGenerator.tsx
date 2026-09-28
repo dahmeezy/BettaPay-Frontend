@@ -18,7 +18,14 @@ function useInvoiceMerchant(): InvoiceMerchant {
   };
 }
 
-function generatePdfViaWorker(type: 'SINGLE' | 'BATCH', payload: any): Promise<{ blob: Blob, filename: string } | null> {
+type InvoiceWorkerPayload =
+  | { settlement: ApiSettlement; merchant: InvoiceMerchant }
+  | { settlements: ApiSettlement[]; merchant: InvoiceMerchant };
+
+function generatePdfViaWorker(
+  type: 'SINGLE' | 'BATCH',
+  payload: InvoiceWorkerPayload
+): Promise<{ blob: Blob, filename: string } | null> {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('@/lib/workers/pdf.worker.ts', import.meta.url));
     const id = Date.now();
@@ -40,7 +47,7 @@ function generatePdfViaWorker(type: 'SINGLE' | 'BATCH', payload: any): Promise<{
   });
 }
 
-async function triggerDownload(type: 'SINGLE' | 'BATCH', payload: any) {
+async function triggerDownload(type: 'SINGLE' | 'BATCH', payload: InvoiceWorkerPayload) {
   const result = await generatePdfViaWorker(type, payload);
   if (!result) return;
   const url = URL.createObjectURL(result.blob);

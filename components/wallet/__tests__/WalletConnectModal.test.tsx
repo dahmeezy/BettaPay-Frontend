@@ -7,14 +7,17 @@ const onStatus = jest.fn();
 const onSession = jest.fn();
 const resetWalletConnectClient = jest.fn();
 const isWalletConnectConfigured = jest.fn(() => true);
-const getWalletConnectClient = jest.fn(() => ({
-  connect,
-  onStatus,
-  onSession,
-}));
+const getWalletConnectClient = jest.fn(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (_network?: string) => ({
+    connect,
+    onStatus,
+    onSession,
+  }),
+);
 
 jest.mock('@/lib/stellar/walletconnect', () => ({
-  getWalletConnectClient: (...args: unknown[]) => getWalletConnectClient(...args),
+  getWalletConnectClient: (network?: string) => getWalletConnectClient(network),
   resetWalletConnectClient: () => resetWalletConnectClient(),
   isWalletConnectConfigured: () => isWalletConnectConfigured(),
   WalletConnectConfigError: class WalletConnectConfigError extends Error {},

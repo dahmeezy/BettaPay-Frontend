@@ -73,7 +73,7 @@ describe('GET /api/admin/performance', () => {
     const req = makeAdminRequest();
     const res = await GET(req);
     expect(res.status).toBe(200);
-    const body = JSON.parse((res as { body: string }).body);
+    const body = JSON.parse((res as unknown as { body: string }).body);
     expect(body.totalEvents).toBe(0);
     expect(body.routes).toEqual([]);
   });
@@ -83,7 +83,7 @@ describe('GET /api/admin/performance', () => {
     const req = makeAdminRequest();
     const res = await GET(req);
     expect(res.status).toBe(200);
-    const body = JSON.parse((res as { body: string }).body);
+    const body = JSON.parse((res as unknown as { body: string }).body);
     expect(body.totalEvents).toBe(35);
     expect(body.routes.length).toBe(3);
     expect(body.data).not.toBeNull();
@@ -96,7 +96,7 @@ describe('GET /api/admin/performance', () => {
     seedTestData();
     const req = makeAdminRequest('/api/admin/performance?route=/dashboard');
     const res = await GET(req);
-    const body = JSON.parse((res as { body: string }).body);
+    const body = JSON.parse((res as unknown as { body: string }).body);
     expect(body.data.route).toBe('/dashboard');
   });
 
@@ -104,7 +104,7 @@ describe('GET /api/admin/performance', () => {
     seedTestData();
     const req = makeAdminRequest('/api/admin/performance?metric=fcp');
     const res = await GET(req);
-    const body = JSON.parse((res as { body: string }).body);
+    const body = JSON.parse((res as unknown as { body: string }).body);
     expect(body.data.metric).toBe('fcp');
     expect(body.data.sampleCount).toBe(5);
   });
@@ -113,7 +113,7 @@ describe('GET /api/admin/performance', () => {
     seedTestData();
     const req = makeAdminRequest('/api/admin/performance?days=1');
     const res = await GET(req);
-    const body = JSON.parse((res as { body: string }).body);
+    const body = JSON.parse((res as unknown as { body: string }).body);
     expect(body.data).not.toBeNull();
   });
 
@@ -121,7 +121,7 @@ describe('GET /api/admin/performance', () => {
     seedTestData();
     const req = makeAdminRequest();
     const res = await GET(req);
-    const body = JSON.parse((res as { body: string }).body);
+    const body = JSON.parse((res as unknown as { body: string }).body);
     expect(body.data.percentiles.p50).toBeGreaterThanOrEqual(0);
     expect(body.data.percentiles.p90).toBeGreaterThanOrEqual(body.data.percentiles.p50);
   });
@@ -130,7 +130,7 @@ describe('GET /api/admin/performance', () => {
     seedTestData();
     const req = makeAdminRequest();
     const res = await GET(req);
-    const body = JSON.parse((res as { body: string }).body);
+    const body = JSON.parse((res as unknown as { body: string }).body);
     const summaries = body.data.routeSummaries;
     expect(summaries.length).toBeGreaterThan(0);
     for (let i = 1; i < summaries.length; i++) {
@@ -142,7 +142,7 @@ describe('GET /api/admin/performance', () => {
     seedTestData();
     const req = makeAdminRequest();
     const res = await GET(req);
-    const body = JSON.parse((res as { body: string }).body);
+    const body = JSON.parse((res as unknown as { body: string }).body);
     expect(body.data.distribution.length).toBeGreaterThan(0);
     const totalInBuckets = body.data.distribution.reduce(
       (sum: number, b: { count: number }) => sum + b.count,
@@ -155,7 +155,7 @@ describe('GET /api/admin/performance', () => {
     seedTestData();
     const req = makeAdminRequest();
     const res = await GET(req);
-    const body = JSON.parse((res as { body: string }).body);
+    const body = JSON.parse((res as unknown as { body: string }).body);
     expect(body.metrics).toContain('lcp');
     expect(body.metrics).toContain('fcp');
   });
@@ -170,7 +170,7 @@ describe('GET /api/admin/performance', () => {
     seedTestData();
     const req = makeAdminRequest();
     const res = await GET(req);
-    const body = JSON.parse((res as { body: string }).body);
+    const body = JSON.parse((res as unknown as { body: string }).body);
     expect(body.timeRange.from).toBeDefined();
     expect(body.timeRange.to).toBeDefined();
   });

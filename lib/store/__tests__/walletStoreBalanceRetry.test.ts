@@ -18,6 +18,8 @@ describe('useWalletStore - Balance Refresh Retry Cap (#505)', () => {
   });
 
   it('caps retries at 3 attempts and sets error state on failure', async () => {
+    // refreshBalances is debounced (2s) and the retry backoff sleeps up to
+    // 3.5s, so this legitimately runs past jest's 5s default timeout.
     const fetchMock = jest.fn().mockRejectedValue(new Error('Horizon server unavailable'));
     global.fetch = fetchMock;
 
@@ -29,7 +31,7 @@ describe('useWalletStore - Balance Refresh Retry Cap (#505)', () => {
     expect(state.error).toContain('Horizon server unavailable');
     // Initial fetch (1) + 3 retries = 4 total attempts
     expect(fetchMock).toHaveBeenCalledTimes(4);
-  });
+  }, 15000);
 
   it('resets error and retry state when manual refresh is triggered', async () => {
     // First call fails
@@ -54,5 +56,5 @@ describe('useWalletStore - Balance Refresh Retry Cap (#505)', () => {
     expect(state.error).toBeNull();
     expect(state.loading).toBe(false);
     expect(state.balances).toEqual([{ assetCode: 'XLM', balance: '500.0000000' }]);
-  });
+  }, 20000);
 });

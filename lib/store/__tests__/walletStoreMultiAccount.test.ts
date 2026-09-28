@@ -50,7 +50,7 @@ describe('useWalletStore - Multi Account Support (#503)', () => {
     expect(state.stellarAccounts).toEqual(mockSession.stellarAccounts);
   });
 
-  it('allows selecting an alternative presented account and triggers balance refresh', () => {
+  it('allows selecting an alternative presented account and triggers balance refresh', async () => {
     const fetchMock = jest.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ balances: [{ asset_type: 'native', balance: '150.0000000' }] }),
@@ -74,7 +74,15 @@ describe('useWalletStore - Multi Account Support (#503)', () => {
 
     const state = useWalletStore.getState();
     expect(state.address).toBe(secondAddress);
-    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining(secondAddress));
+
+    // selectAccount triggers the balance refresh, which is debounced by 2s.
+    // Awaiting the store's refresh promise resolves only after the debounced
+    // invocation has actually run, so the fetch is guaranteed to have fired.
+    await useWalletStore.getState().refreshBalances();
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining(secondAddress),
+      expect.objectContaining({ signal: expect.anything() }),
+    );
   });
 
   it('ignores account selection for unpresented accounts', () => {

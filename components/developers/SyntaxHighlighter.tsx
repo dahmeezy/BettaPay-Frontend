@@ -21,6 +21,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { LanguageRegistration } from 'shiki/core';
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 import { type Language } from './codeSnippets';
 import { SafeHtmlRenderer } from '@/components/shared/SafeHtmlRenderer';
 
@@ -94,7 +95,7 @@ async function getHighlighterForLanguage(
       import('@shikijs/themes/github-dark'),
     ]);
     highlighterPromise = shiki.getSingletonHighlighterCore({
-      engine: shiki.createJavaScriptRegexEngine({ forgiving: true }),
+      engine: createJavaScriptRegexEngine({ forgiving: true }),
       themes: themes.map((theme) => theme.default),
       langs: EAGER_LANGUAGES.map((language) => languageLoaders[language]),
     });

@@ -13,6 +13,18 @@ const customJestConfig = {
   moduleNameMapper: {
     // Handle module aliases
     "^@/(.*)$": "<rootDir>/$1",
+    // Shiki ships ESM-only .mjs builds that jsdom cannot parse; every shiki
+    // module the app loads resolves to a lightweight CJS stub instead. Under
+    // parallel load, per-suite `jest.mock` factories can race with module
+    // resolution and let the real .mjs through — mapper-based stubs cannot.
+    "^shiki/core$": "<rootDir>/test/mocks/shiki-core.js",
+    "^shiki/engine/javascript$": "<rootDir>/test/mocks/shiki-engine-javascript.js",
+    "^@shikijs/langs/js$": "<rootDir>/test/mocks/shiki-lang-js.js",
+    "^@shikijs/langs/python$": "<rootDir>/test/mocks/shiki-lang-python.js",
+    "^@shikijs/langs/php$": "<rootDir>/test/mocks/shiki-lang-php.js",
+    "^@shikijs/langs/go$": "<rootDir>/test/mocks/shiki-lang-go.js",
+    "^@shikijs/themes/github-light$": "<rootDir>/test/mocks/shiki-theme-github-light.js",
+    "^@shikijs/themes/github-dark$": "<rootDir>/test/mocks/shiki-theme-github-dark.js",
   },
 };
 

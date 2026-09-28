@@ -13,7 +13,7 @@ jest.mock('@/lib/api/hooks', () => ({
 }));
 
 jest.mock('@/lib/store/offlineStore', () => ({
-  useOfflineStore: (selector: (state: { isOnline: boolean })) => selector({ isOnline: true }),
+  useOfflineStore: (selector: (state: { isOnline: boolean }) => boolean) => selector({ isOnline: true }),
 }));
 
 jest.mock('@tanstack/react-virtual', () => ({
@@ -40,7 +40,7 @@ jest.mock('@/components/ui', () => {
       <select
         aria-label="select"
         value={value}
-        onChange={(e) => onValueChange(e.target.value)}
+        onChange={(e) => onValueChange?.(e.target.value)}
       >
         {children}
       </select>

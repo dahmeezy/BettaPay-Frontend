@@ -48,16 +48,16 @@ export function AccountPicker({ onAccountSelected, className = '' }: AccountPick
   const stellarAccounts = useWalletStore((s) => s.stellarAccounts);
   const selectAccount = useWalletStore((s) => s.selectAccount);
 
-  if (!stellarAccounts || stellarAccounts.length <= 1) {
-    return null;
-  }
-
   const handleSelect = useCallback((account: string) => {
     selectAccount(account);
     if (onAccountSelected) {
       onAccountSelected(account);
     }
   }, [selectAccount, onAccountSelected]);
+
+  if (!stellarAccounts || stellarAccounts.length <= 1) {
+    return null;
+  }
 
   return (
     <div className={`p-4 bg-muted/40 border border-border rounded-xl space-y-3 ${className}`}>

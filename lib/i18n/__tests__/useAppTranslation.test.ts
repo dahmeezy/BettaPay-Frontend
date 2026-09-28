@@ -47,7 +47,9 @@ describe("useAppTranslation", () => {
     "t('%s') returns real translated text, not the raw key",
     (key) => {
       const { result } = renderHook(() => useAppTranslation());
-      const text = result.current.t(key as Parameters<typeof result.current.t>[0]);
+      // it.each widens `key` to its own generic; narrow t() to the string form.
+      const tFn = result.current.t as (key: string) => string;
+      const text = tFn(key);
       // The translation must not equal the raw key string.
       expect(text).not.toBe(key);
       // The translation must be a non-empty string.

@@ -15,7 +15,7 @@ jest.mock("@/lib/hooks/useNotify", () => ({
 }));
 
 jest.mock("@/lib/store/offlineStore", () => ({
-  useOfflineStore: (selector: (state: { isOnline: boolean })) => selector({ isOnline: true }),
+  useOfflineStore: (selector: (state: { isOnline: boolean }) => boolean) => selector({ isOnline: true }),
 }));
 
 jest.mock("@/lib/api/axios", () => ({
@@ -43,7 +43,7 @@ jest.mock("@/components/ui/select", () => {
       <select
         aria-label="select-env"
         value={value}
-        onChange={(e) => onValueChange(e.target.value)}
+        onChange={(e) => onValueChange?.(e.target.value)}
       >
         {children}
       </select>

@@ -171,7 +171,7 @@ describe('POST /api/rum', () => {
       events: [{ invalid: true }],
     });
     const res = await POST(req);
-    const body = (res as { body: string }).body;
+    const body = (res as unknown as { body: string }).body;
     expect(body).not.toContain('email');
     expect(body).not.toContain('token');
     expect(body).not.toContain('password');

@@ -34,13 +34,14 @@ jest.mock('@tanstack/react-query', () => {
 import { useQuery } from '@tanstack/react-query';
 
 type MockQueryResult = {
-  data: DashboardResponse | undefined;
+  data: unknown;
   isLoading: boolean;
   error: Error | null;
   refetch: jest.Mock;
 };
 
-const mockUseQuery = useQuery as jest.MockedFunction<typeof useQuery>;
+// Loosely typed so partial UseQueryResult mocks are accepted.
+const mockUseQuery = useQuery as unknown as jest.Mock;
 
 function createWrapper() {
   const queryClient = new QueryClient({

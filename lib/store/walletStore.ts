@@ -8,14 +8,14 @@ import { captureException } from '../errorReporting';
 
 type Connector = 'freighter' | 'walletconnect' | null;
 
-function debouncePromise<T extends (...args: any[]) => Promise<void>>(
-  func: T,
+function debouncePromise<TArgs extends unknown[]>(
+  func: (...args: TArgs) => Promise<void>,
   wait: number
-): T {
+): (...args: TArgs) => Promise<void> {
   let timeout: NodeJS.Timeout | null = null;
   let resolvers: Array<() => void> = [];
 
-  return (async (...args: any[]) => {
+  return (async (...args: TArgs) => {
     return new Promise<void>((resolve) => {
       resolvers.push(resolve);
       if (timeout) clearTimeout(timeout);
@@ -26,7 +26,7 @@ function debouncePromise<T extends (...args: any[]) => Promise<void>>(
         currentResolvers.forEach((r) => r());
       }, wait);
     });
-  }) as T;
+  }) as (...args: TArgs) => Promise<void>;
 }
 
 const NETWORK_URLS: Record<string, string> = {
@@ -285,7 +285,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       }
 
       const client = getWalletConnectClient(persisted.network);
-      await client.restoreSession(persisted.walletConnectSession);
+      await client.restoreSession(persisted.walletConnectSession!);
       set({
         address: persisted.address,
         stellarAccounts: persisted.stellarAccounts,

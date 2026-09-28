@@ -6,7 +6,7 @@ import type { AxiosInstance } from 'axios';
 // limit the user is already waiting out.
 describe('axios rate-limit gate', () => {
   let apiClient: AxiosInstance;
-  let store: ReturnType<typeof import("../rateLimitStore").createRateLimitStore>;
+  let store: typeof import("@/lib/store/rateLimitStore").useRateLimitStore;
   let dispatched: string[];
 
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('axios rate-limit gate', () => {
 
     const axios = require('axios');
     axios.defaults.adapter = (config: import("axios").InternalAxiosRequestConfig) => {
-      dispatched.push(config.url);
+      dispatched.push(config.url ?? '');
       return Promise.resolve({
         data: { ok: true },
         status: 200,

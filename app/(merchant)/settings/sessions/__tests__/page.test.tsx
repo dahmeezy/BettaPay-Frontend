@@ -27,7 +27,18 @@ const otherSession = {
   isCurrent: false,
 };
 
-let sessions = {
+type SessionRow = {
+  id: string;
+  device: string;
+  ipAddress: string;
+  lastActivityAt: string;
+  expiresAt: string;
+  status: 'active' | 'revoked';
+  isCurrent: boolean;
+  revokedAt?: string;
+};
+
+let sessions: { active: SessionRow[]; history: SessionRow[] } = {
   active: [currentSession, otherSession],
   history: [],
 };

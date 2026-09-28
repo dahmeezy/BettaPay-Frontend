@@ -64,11 +64,15 @@ export function hasRealSession(s: Pick<AuthState, "isAuthenticated" | "user">): 
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       token: null,
       role: null,
       isAuthenticated: false,
+      isLoggedIn: false,
+      _hasHydrated: false,
+      setHasHydrated: (v) => set({ _hasHydrated: v }),
+      setToken: (token) => set({ token }),
       login: (token, user) =>
         set({
           user,

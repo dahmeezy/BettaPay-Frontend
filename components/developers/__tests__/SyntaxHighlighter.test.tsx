@@ -1,6 +1,13 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import type { LanguageRegistration } from 'shiki/core';
+// All shiki modules resolve to CJS stubs in <rootDir>/test/mocks/ via jest
+// moduleNameMapper (shiki ships ESM-only .mjs builds jsdom cannot parse),
+// so the suite imports the exact module instances the component loads.
+import { getSingletonHighlighterCore } from 'shiki/core';
+import jsGrammar from '@shikijs/langs/js';
+import pyGrammar from '@shikijs/langs/python';
+import phpGrammar from '@shikijs/langs/php';
+import goGrammar from '@shikijs/langs/go';
 import { SyntaxHighlighter } from '../SyntaxHighlighter';
 
 /**
@@ -24,58 +31,18 @@ import { SyntaxHighlighter } from '../SyntaxHighlighter';
 
 const mockLoadLanguage = jest.fn();
 const mockCodeToHtml = jest.fn();
-const mockGetSingletonHighlighterCore = jest.fn();
+// The shared mapper-stub function; each test installs its own behaviour.
+const mockGetSingletonHighlighterCore =
+  getSingletonHighlighterCore as unknown as jest.Mock;
 
-/** The grammar arrays the mocked `@shikijs/langs/*` modules default-export. */
-const grammars: Record<'js' | 'py' | 'php' | 'go', LanguageRegistration[]> = {
-  js: [{ name: 'javascript', aliases: ['js'] }],
-  py: [{ name: 'python', aliases: ['py'] }],
-  php: [{ name: 'css' }, { name: 'php' }],
-  go: [{ name: 'go' }],
+/** The grammar arrays the stubbed `@shikijs/langs/*` modules default-export. */
+type MockGrammar = Array<{ name?: string; aliases?: string[] }>;
+const grammars: Record<'js' | 'py' | 'php' | 'go', MockGrammar> = {
+  js: jsGrammar,
+  py: pyGrammar,
+  php: phpGrammar,
+  go: goGrammar,
 };
-
-// `virtual: true` lets the suite mock these subpath modules without needing
-// the real packages to resolve in the jest environment.
-jest.mock(
-  'shiki/core',
-  () => ({
-    __esModule: true,
-    getSingletonHighlighterCore: (...args: unknown[]) =>
-      mockGetSingletonHighlighterCore(...args),
-    createJavaScriptRegexEngine: () => ({}),
-  }),
-  { virtual: true },
-);
-jest.mock(
-  '@shikijs/langs/js',
-  () => ({ __esModule: true, default: grammars.js }),
-  { virtual: true },
-);
-jest.mock(
-  '@shikijs/langs/python',
-  () => ({ __esModule: true, default: grammars.py }),
-  { virtual: true },
-);
-jest.mock(
-  '@shikijs/langs/php',
-  () => ({ __esModule: true, default: grammars.php }),
-  { virtual: true },
-);
-jest.mock(
-  '@shikijs/langs/go',
-  () => ({ __esModule: true, default: grammars.go }),
-  { virtual: true },
-);
-jest.mock(
-  '@shikijs/themes/github-light',
-  () => ({ __esModule: true, default: { name: 'github-light' } }),
-  { virtual: true },
-);
-jest.mock(
-  '@shikijs/themes/github-dark',
-  () => ({ __esModule: true, default: { name: 'github-dark' } }),
-  { virtual: true },
-);
 
 jest.mock('@/components/shared/SafeHtmlRenderer', () => ({
   SafeHtmlRenderer: ({ html }: { html: string }) => (
@@ -98,7 +65,7 @@ function renderHighlighter(props: { code: string; language: LanguageProp }) {
 }
 
 /** Count of loadLanguage calls that received a given grammar array. */
-function loadCount(grammar: LanguageRegistration[]): number {
+function loadCount(grammar: MockGrammar): number {
   return mockLoadLanguage.mock.calls.filter(
     (call) => call[0] === grammar,
   ).length;
